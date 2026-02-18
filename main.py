@@ -75,6 +75,7 @@ def check_for_update():
                 f.write(new_code)
 
             print("Update downloaded. Restarting...")
+            set_local_version(remote_version)
             machine.reset()
 
         else:
