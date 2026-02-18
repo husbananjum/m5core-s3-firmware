@@ -35,6 +35,22 @@ WIFI_PASS = '@!nt3lGwn#1'
 import requests
 import machine
 
+nvs = esp32.NVS("storage")
+
+def get_local_version():
+    try:
+        return nvs.get_str("fw_version")
+    except:
+        return "1.0"   # default first install
+
+def set_local_version(version):
+    try:
+        nvs.set_str("fw_version", version)
+        nvs.commit()
+        print("Version saved:", version)
+    except Exception as e:
+        print("NVS save error:", e)
+
 def check_for_update():
     try:
         print("Checking for update...")
@@ -46,7 +62,7 @@ def check_for_update():
         print("Remote:", remote_version)
         print("Local :", FIRMWARE_VERSION)
 
-        if float(remote_version) > float(FIRMWARE_VERSION):
+        if float(remote_version) > float(local_version):
             print("New version found. Updating...")
 
             r = requests.get(UPDATE_FILE_URL)
@@ -57,6 +73,7 @@ def check_for_update():
                 f.write(new_code)
 
             print("Update downloaded. Restarting...")
+            set_local_version(remote_version)
             machine.reset()
 
         else:
@@ -67,7 +84,7 @@ def check_for_update():
 
 
 
-FIRMWARE_VERSION = "1.0"
+local_version = get_local_version()
 UPDATE_VERSION_URL = "https://raw.githubusercontent.com/husbananjum/m5core-s3-firmware/refs/heads/main/version.txt"
 UPDATE_FILE_URL = "https://raw.githubusercontent.com/husbananjum/m5core-s3-firmware/refs/heads/main/main.py"
 
