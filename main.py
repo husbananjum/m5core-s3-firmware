@@ -57,6 +57,9 @@ def check_for_update():
     try:
         print("Checking for update...")
 
+        local_version = get_local_version()
+
+        # Get remote version
         r = requests.get(UPDATE_VERSION_URL)
         remote_version = r.text.strip()
         r.close()
@@ -64,27 +67,33 @@ def check_for_update():
         print("Remote:", remote_version)
         print("Local :", local_version)
 
+        # Compare versions
         if float(remote_version) > float(local_version):
             print("New version found. Updating...")
 
+            # Download new firmware (streamed)
             r = requests.get(UPDATE_FILE_URL)
-            new_code = r.text
+
+            with open("/flash/main_ota_temp.py", "wb") as f:
+                while True:
+                    chunk = r.raw.read(1024)
+                    if not chunk:
+                        break
+                    f.write(chunk)
+
             r.close()
 
-            with open("/flash/main_ota_temp.py", "w") as f:
-                f.write(new_code)
-
-            print("Update downloaded. Restarting...")
+            # Save new version to NVS
             set_local_version(remote_version)
+
+            print("Update complete. Restarting...")
             machine.reset()
 
         else:
-            print("Already latest version")
+            print("Already latest version.")
 
     except Exception as e:
         print("Update check failed:", e)
-
-
 
 
 UPDATE_VERSION_URL = "https://raw.githubusercontent.com/husbananjum/m5core-s3-firmware/refs/heads/main/version.txt"
@@ -100,7 +109,7 @@ MQTT_RESET_TOPIC = 'reset-topic'
 RESET_UID = "D3:58:24:F8:00:00:00:00:00:00"
 NVS_NAMESPACE = "rfid_data"
 MAX_RETRIES = 5
-MQTT_TOPIC = "send_receive_data1234"
+MQTT_TOPIC = "send_receive_data123"
 MQTT_LAMP = "lamp_topic"
 DEVICE_TYPE = "tag_reader"
 DEVICE_NUMBER = serial
