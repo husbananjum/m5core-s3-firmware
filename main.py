@@ -16,6 +16,8 @@ import utime
 from machine import unique_id
 import ubinascii
 from unit import RGBUnit
+import requests
+import machine
 #player = None
 serial = ubinascii.hexlify(unique_id()).decode()
 # Constants and Configuration
@@ -29,6 +31,47 @@ WIFI_PASS = '@!nt3lGwn#1'
 #WIFI_PASS = '125125125'
 #WIFI_SSID = 'StormFiber-2.4G'
 #WIFI_PASS = '22733801'
+
+import requests
+import machine
+
+def check_for_update():
+    try:
+        print("Checking for update...")
+
+        r = requests.get(UPDATE_VERSION_URL)
+        remote_version = r.text.strip()
+        r.close()
+
+        print("Remote:", remote_version)
+        print("Local :", FIRMWARE_VERSION)
+
+        if float(remote_version) > float(FIRMWARE_VERSION):
+            print("New version found. Updating...")
+
+            r = requests.get(UPDATE_FILE_URL)
+            new_code = r.text
+            r.close()
+
+            with open("/flash/main_ota_temp.py", "w") as f:
+                f.write(new_code)
+
+            print("Update downloaded. Restarting...")
+            machine.reset()
+
+        else:
+            print("Already latest version")
+
+    except Exception as e:
+        print("Update check failed:", e)
+
+
+
+FIRMWARE_VERSION = "1.0"
+UPDATE_VERSION_URL = "https://raw.githubusercontent.com/husbananjum/m5core-s3-firmware/refs/heads/main/version.txt"
+UPDATE_FILE_URL = "https://raw.githubusercontent.com/husbananjum/m5core-s3-firmware/refs/heads/main/main.py"
+
+
 MQTT_CLIENT_ID = serial
 MQTT_BROKER = '192.168.15.5'
 MQTT_PORT = 1883
@@ -641,7 +684,9 @@ def setup():
     init_ui()
     label2 = Widgets.Label("SR:  LOADING...", 70, 70, 1.0,0x000000, 0xffffff, Widgets.FONTS.DejaVu18)
     init_wifi()
-    
+    if wlan.isconnected():
+      check_for_update() #check update files from git hub
+
     serial = ubinascii.hexlify(unique_id()).decode()
     
     label2.setText("SR: " + serial)
