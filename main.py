@@ -51,6 +51,8 @@ def set_local_version(version):
     except Exception as e:
         print("NVS save error:", e)
 
+local_version = get_local_version()
+
 def check_for_update():
     try:
         print("Checking for update...")
@@ -60,7 +62,7 @@ def check_for_update():
         r.close()
 
         print("Remote:", remote_version)
-        print("Local :", FIRMWARE_VERSION)
+        print("Local :", local_version)
 
         if float(remote_version) > float(local_version):
             print("New version found. Updating...")
@@ -84,7 +86,7 @@ def check_for_update():
 
 
 
-local_version = get_local_version()
+
 UPDATE_VERSION_URL = "https://raw.githubusercontent.com/husbananjum/m5core-s3-firmware/refs/heads/main/version.txt"
 UPDATE_FILE_URL = "https://raw.githubusercontent.com/husbananjum/m5core-s3-firmware/refs/heads/main/main.py"
 
