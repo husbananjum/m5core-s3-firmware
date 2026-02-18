@@ -99,7 +99,7 @@ MQTT_RESET_TOPIC = 'reset-topic'
 RESET_UID = "D3:58:24:F8:00:00:00:00:00:00"
 NVS_NAMESPACE = "rfid_data"
 MAX_RETRIES = 5
-MQTT_TOPIC = "send_receive_data123"
+MQTT_TOPIC = "send_receive_data"
 MQTT_LAMP = "lamp_topic"
 DEVICE_TYPE = "tag_reader"
 DEVICE_NUMBER = serial
@@ -131,6 +131,7 @@ ui_elements = {
     'image4': None,
     'image5': None,
     'image6': None,
+    'label12': None,
     'bettery_per': None,
     'charging_icon':None
 }
@@ -276,6 +277,8 @@ def init_ui():
     try:
         Widgets.fillScreen(0xffffff)
         
+        #Version info
+        
         #employee ID
         ui_elements['rect0'] = Widgets.Rectangle(4, 101, 152, 55, 0x616161, 0xffffff)
         ui_elements['image1'] = Widgets.Image("/flash/res/img/emp.jpg", 5, 102, scale_x=1, scale_y=1)
@@ -304,6 +307,10 @@ def init_ui():
         
         # Bettery %
         ui_elements['bettery_per'] =Widgets.Label("b%", 230, 15,1.0, 0x000000, 0xffffff, Widgets.FONTS.DejaVu12)
+        #Version info
+        ui_elements['label12'] = Widgets.Label(f"V{local_version}", 275, 55, 1.0, 0x000000, 0xffffff, Widgets.FONTS.DejaVu12)
+
+
     except Exception as e:
         print("UI Init Error:", e)
 def connect_wifi():
@@ -548,6 +555,7 @@ def loop():
     global tag_counter, seen_uids, last_uid_str, mqtt_client, serial, player, Operator_ID ,battery_per , bettery_icon, card,rfid_re_init,i2c0,rfid_0,lamp_color, waiting_for_ack, ack_deadline
     
     #M5.update()
+    
     serial = ubinascii.hexlify(unique_id()).decode()
     check_wifi()
     time.sleep(0.1)
