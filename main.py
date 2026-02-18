@@ -57,9 +57,6 @@ def check_for_update():
     try:
         print("Checking for update...")
 
-        local_version = get_local_version()
-
-        # Get remote version
         r = requests.get(UPDATE_VERSION_URL)
         remote_version = r.text.strip()
         r.close()
@@ -67,30 +64,21 @@ def check_for_update():
         print("Remote:", remote_version)
         print("Local :", local_version)
 
-        # Compare versions
         if float(remote_version) > float(local_version):
             print("New version found. Updating...")
 
-            # Download new firmware (streamed)
             r = requests.get(UPDATE_FILE_URL)
-
-            with open("/flash/main_ota_temp.py", "wb") as f:
-                while True:
-                    chunk = r.raw.read(1024)
-                    if not chunk:
-                        break
-                    f.write(chunk)
-
+            new_code = r.text
             r.close()
 
-            # Save new version to NVS
-            set_local_version(remote_version)
+            with open("/flash/main_ota_temp.py", "w") as f:
+                f.write(new_code)
 
-            print("Update complete. Restarting...")
+            print("Update downloaded. Restarting...")
             machine.reset()
 
         else:
-            print("Already latest version.")
+            print("Already latest version")
 
     except Exception as e:
         print("Update check failed:", e)
