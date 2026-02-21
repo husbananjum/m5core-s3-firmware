@@ -21,12 +21,12 @@ import machine
 #player = None
 serial = ubinascii.hexlify(unique_id()).decode()
 # Constants and Configuration
-#WIFI_SSID = 'UI-Matrix'
-#WIFI_PASS = 'Uimatrix01'
+WIFI_SSID = 'UI-Matrix'
+WIFI_PASS = 'Uimatrix01'
 #WIFI_SSID = 'Utopia-WiFi'
 #WIFI_PASS = '@!nt3lGwn#1'
-WIFI_SSID = 'A16'
-WIFI_PASS = '12345678'
+#WIFI_SSID = 'A16'
+#WIFI_PASS = '12345678'
 #WIFI_SSID = 'okay.'
 #WIFI_PASS = '125125125'
 #WIFI_SSID = 'StormFiber-2.4G'
@@ -90,8 +90,8 @@ UPDATE_FILE_URL = "https://raw.githubusercontent.com/husbananjum/m5core-s3-firmw
 
 
 MQTT_CLIENT_ID = serial
-#MQTT_BROKER = '192.168.15.5'
-MQTT_BROKER = 'scada.utopia.pk'
+MQTT_BROKER = '192.168.40.5'
+#MQTT_BROKER = 'scada.utopia.pk'
 MQTT_PORT = 1883
 MQTT_USER = 'utopia'
 MQTT_PASSWORD = 'utopia01'
